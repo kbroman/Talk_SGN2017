@@ -380,10 +380,65 @@
 
 
 
+\begin{frame}[c]{}
+  \centerline{\Large share more data, sooner}
+\end{frame}
+
+
 
 \begin{frame}[c]{}
+  \centerline{\Large Are your results reproducible?}
+\end{frame}
 
-\Large
+
+
+
+\begin{frame}[fragile,c]{Reproducibility}
+
+\begin{center}
+\begin{minipage}[c]{9.3cm}
+\begin{semiverbatim}
+\lstset{basicstyle=\normalsize}
+\begin{lstlisting}[linewidth=9.3cm]
+ Karl -- this is very interesting,
+ however you used an old version of
+ the data (n=143 rather than n=226).
+
+ I'm really sorry you did all that
+ work on the incomplete dataset.
+
+ Bruce
+\end{lstlisting}
+\end{semiverbatim}
+\end{minipage}
+\end{center}
+
+\end{frame}
+
+
+\begin{frame}[c]{Steps toward reproducible research}
+
+  \vspace{5mm}
+
+  \begin{enumerate}
+  \itemsep10pt
+  \item Organize your data \& code
+  \item Everything with a script
+  \item Automate the process {\lolit (GNU Make)}
+  \item Turn scripts into reproducible reports
+  \item Turn repeated code into functions
+  \item Create a package/module
+  \item Use version control {\lolit (git/GitHub)}
+  \item Pick a license, any license
+  \end{enumerate}
+
+\hfill \href{http://kbroman.org/steps2rr}{\scriptsize \color{lolit} \tt kbroman.org/steps2rr}
+
+\end{frame}
+
+
+
+\begin{frame}[c]{}
 
 Slides: \href{http://bit.ly/sgn2017}{\tt bit.ly/sgn2017} \quad
 \includegraphics[height=5mm]{Figs/cc-zero.png}
