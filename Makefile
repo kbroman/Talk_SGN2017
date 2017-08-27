@@ -10,7 +10,7 @@ $(STEM).pdf: $(STEM).tex header.tex $(FIGS)
 	xelatex $<
 
 web: $(STEM).pdf
-	scp $(STEM).pdf broman-10.biostat.wisc.edu:Website/presentations/$(STEM).pdf
+	scp $(STEM).pdf broman-10.biostat.wisc.edu:Website/presentations/SGN2017/$(STEM).pdf
 
 Figs/scale_fig1.pdf: R/scale_fig.R
 	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
