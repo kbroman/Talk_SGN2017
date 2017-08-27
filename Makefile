@@ -11,7 +11,8 @@ FIGS = Figs/scale_fig1.pdf \
 	   Figs/rilines.pdf \
 	   Figs/ri8.pdf \
 	   Figs/pleiotropy_network.pdf \
-	   Figs/causal_network.pdf
+	   Figs/causal_network.pdf \
+	   Figs/plot-eqtl-islet.png
 
 $(STEM).pdf: $(STEM).tex header.tex $(FIGS)
 	xelatex $<
