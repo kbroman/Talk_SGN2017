@@ -1,8 +1,9 @@
 # congenic line
 
 bgcolor <- broman::brocolors("bg")
-color <- broman::brocolors()
+color <- broman::brocolors("crayons")[c("Cornflower", "Blush")]
 
+library(qtl)
 data(map10)
 L <- summary(map10)[1:20,2]
 #L <- read.csv("/Users/kbroman/Projects/MouseMaps/lengths.csv")[,4]

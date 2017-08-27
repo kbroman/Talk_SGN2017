@@ -7,7 +7,9 @@ FIGS = Figs/scale_fig1.pdf \
 	   Figs/epistasis_f2.pdf \
 	   Figs/congenic.pdf \
 	   Figs/ail.pdf \
-	   Figs/hs.pdf
+	   Figs/hs.pdf \
+	   Figs/rilines.pdf \
+	   Figs/ri8.pdf
 
 $(STEM).pdf: $(STEM).tex header.tex $(FIGS)
 	xelatex $<
@@ -25,4 +27,16 @@ Figs/epistasis_f2.pdf: R/epistasis_fig.R
 	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
 
 Figs/congenic.pdf: R/congenic_fig.R
+	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
+
+Figs/ail.pdf: R/ail_fig.R
+	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
+
+Figs/hs.pdf: R/hs_fig.R
+	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
+
+Figs/ri8.pdf: R/ri8_fig.R
+	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
+
+Figs/rilines.pdf: R/rilines_fig.R
 	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
