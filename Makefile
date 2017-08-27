@@ -4,7 +4,8 @@ STEM = sgn2017
 
 FIGS = Figs/scale_fig1.pdf \
 	   Figs/batches_fig1.pdf \
-	   Figs/epistasis_f2.pdf
+	   Figs/epistasis_f2.pdf \
+	   Figs/congenic.pdf
 
 $(STEM).pdf: $(STEM).tex header.tex $(FIGS)
 	xelatex $<
@@ -19,4 +20,7 @@ Figs/batches_fig1.pdf: R/batches_fig.R
 	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
 
 Figs/epistasis_f2.pdf: R/epistasis_fig.R
+	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
+
+Figs/congenic.pdf: R/congenic_fig.R
 	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
