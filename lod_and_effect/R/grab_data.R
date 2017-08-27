@@ -1,31 +1,28 @@
-# Get LOD curves and effect plot info for 5 wk body weight
+# Get LOD curves and effect plot info for 10 wk insulin
 # and convert to JSON file for interactive graph
 
-library(qtl)
+attach("aligned_geno_with_pmap.RData")
+attach("lipomics_final_rev2.RData")
 
-load("~/Projects/Payseur_Gough/DerivedData/goughF2_simple_v4.RData")
+phenotype <- "log10 Insulin (ng/ml) 10 wk"
 
-# reduce the set of markers
-marker_subset <- NULL
-for(i in names(f2$geno))
-    marker_subset <- c(marker_subset,
-                       pickMarkerSubset(pull.map(f2, chr=i)[[1]], 0.5))
-f2 <- pull.markers(f2, marker_subset)
-f2$pheno <- cbind(weight=growthSm[,5], f2$pheno[,c("ID", "sex", "pgm")])
-
-phenotype <- "Weight (g) at 5 weeks"
+library(lineup)
+id <- findCommonID(f2g$pheno$MouseNum, lipomics$MouseNum)
+f2g <- f2g[,id$first]
+lipomics <- lipomics[id$second,]
+f2g <- calc.genoprob(f2g, step=0.5, stepwidth="max", error.prob=0.002, map.function="c-f")
+f2g$pheno$insulin <- log10(rowMeans(lipomics[,c(37,41)], na.rm=TRUE))
 
 # genome scan with sex as interactive covariate
-sex <- as.numeric(f2$pheno$sex)-1
-f2 <- calc.genoprob(f2, step=1, error.prob=0.002, map.function="c-f")
-out <- scanone(f2, phe="weight", addcovar=sex, intcovar=sex, method="hk")
+sex <- as.numeric(f2g$pheno$Sex)-1
+out <- scanone(f2g, phe="insulin", addcovar=sex, intcovar=sex, method="hk")
 
-f2 <- sim.geno(f2, step=0, error.prob=0.002, map.function="c-f", n.draws=8)
-mar <- markernames(f2)
+f2g <- sim.geno(f2g, step=0, error.prob=0.002, map.function="c-f", n.draws=128)
+mar <- markernames(f2g)
 
 library(parallel)
 ncores <- detectCores()
-qtleffects <- mclapply(mar, function(a) effectplot(f2, phe="weight", mname1="sex",
+qtleffects <- mclapply(mar, function(a) effectplot(f2g, phe="insulin", mname1="Sex",
                                                    mname2=a, draw=FALSE), mc.cores=ncores)
 
 for(i in seq(along=qtleffects)) {
@@ -35,10 +32,9 @@ for(i in seq(along=qtleffects)) {
   nam <- sapply(strsplit(nam, "\\."), function(a) a[2])
   names(qtleffects[[i]]$Means) <- names(qtleffects[[i]]$SEs) <- nam
 }
-names(qtleffects) <- mar
 
 # marker index within lod curves
-map <- pull.map(f2)
+map <- pull.map(f2g)
 outspl <- split(out, out[,1])
 mar <- map
 for(i in seq(along=map)) {
@@ -47,30 +43,26 @@ for(i in seq(along=map)) {
 }
 markers <- lapply(mar, names)
 
-phevals <- f2$pheno$weight
-f2i <- pull.geno(fill.geno(f2, err=0.002, map.function="c-f"))
-g <- pull.geno(f2)
-xmar <- markernames(f2, chr="X")
-g[,xmar] <- reviseXdata("f2", "full", getsex(f2), geno=g[,xmar], cross.attr=attributes(f2))
-f2i[,xmar] <- reviseXdata("f2", "full", getsex(f2), geno=f2i[,xmar], cross.attr=attributes(f2))
-
-f2i[is.na(g) | f2i != g] <- -f2i[is.na(g) | f2i != g]
-f2i <- as.list(as.data.frame(f2i))
-individuals <- as.character(f2$pheno$ID)
+phevals <- f2g$pheno$insulin
+f2gi <- pull.geno(fill.geno(f2g, err=0.002, map.function="c-f"))
+g <- pull.geno(f2g)
+f2gi[is.na(g) | f2gi != g] <- -f2gi[is.na(g) | f2gi != g]
+f2gi <- as.list(as.data.frame(f2gi))
+individuals <- as.character(f2g$pheno$MouseNum)
 
 # write data to JSON file
 library(RJSONIO)
-cat0 <- function(...) cat(..., sep="", file="../weightlod.json")
-cat0a <- function(...) cat(..., sep="", file="../weightlod.json", append=TRUE)
+cat0 <- function(...) cat(..., sep="", file="../insulinlod.json")
+cat0a <- function(...) cat(..., sep="", file="../insulinlod.json", append=TRUE)
 cat0("{\n")
 cat0a("\"phenotype\" : \"", phenotype, "\",\n\n")
-cat0a("\"chr\" :\n", RJSONIO::toJSON(chrnames(f2)), ",\n\n")
-cat0a("\"lod\" :\n", RJSONIO::toJSON(lapply(split(out, out[,1]), function(a) as.list(a[,2:3])), digits=8), ",\n\n")
-cat0a("\"markerindex\" :\n", RJSONIO::toJSON(mar), ",\n\n")
-cat0a("\"markers\" :\n", RJSONIO::toJSON(markers), ",\n\n")
-cat0a("\"effects\" :\n", RJSONIO::toJSON(qtleffects, digits=8), ",\n\n")
-cat0a("\"phevals\" :\n", RJSONIO::toJSON(phevals, digits=8), ",\n\n")
-cat0a("\"sex\" :\n", RJSONIO::toJSON(sex), ",\n\n")
-cat0a("\"geno\" :\n", RJSONIO::toJSON(f2i), ",\n\n")
-cat0a("\"individuals\" :\n", RJSONIO::toJSON(individuals), "\n\n")
+cat0a("\"chr\" :\n", toJSON(chrnames(f2g)), ",\n\n")
+cat0a("\"lod\" :\n", toJSON(lapply(split(out, out[,1]), function(a) as.list(a[,2:3])), digits=8), ",\n\n")
+cat0a("\"markerindex\" :\n", toJSON(mar), ",\n\n")
+cat0a("\"markers\" :\n", toJSON(markers), ",\n\n")
+cat0a("\"effects\" :\n", toJSON(qtleffects, digits=8), ",\n\n")
+cat0a("\"phevals\" :\n", toJSON(phevals, digits=8), ",\n\n")
+cat0a("\"sex\" :\n", toJSON(sex), ",\n\n")
+cat0a("\"geno\" :\n", toJSON(f2gi), ",\n\n")
+cat0a("\"individuals\" :\n", toJSON(individuals), "\n\n")
 cat0a("}\n")

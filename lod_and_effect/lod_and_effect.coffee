@@ -26,6 +26,9 @@ draw = (data) ->
     hInner[i] = h - pad.top - pad.bottom
   chrGap = 8
 
+  blue = "darkslateblue"
+  red = "#d02090"
+
   wInner[1] = botLw - pad.left - pad.right
   botRw = (w - botLw)/2
   wInner[2] = botRw - pad.left - pad.right
@@ -76,6 +79,11 @@ draw = (data) ->
            .attr("width", wInner[j])
            .attr("class", "innerBox")
 
+  # for females, swap X chromosome genotypes 1 <-> 2
+  for m of data.markerindex["X"]
+    for sex,i in data.sex
+      if sex == 0
+        data.geno[m][i] = 3 - data.geno[m][i]
 
   # maximum LOD score
   maxLod = 0
@@ -188,8 +196,8 @@ draw = (data) ->
           genotypes.push(g)
 
     if chr == "X"
-      genotypes[0] = "GG"
-      genotypes[1] = "GWf"
+      genotypes[0] = "BR"
+      genotypes[1] = "RR"
 
      xScale[2] = d3.scale.ordinal()
                    .domain(d3.range(mean.length))
@@ -265,8 +273,8 @@ draw = (data) ->
          .attr("cy", (d) -> yScale[2](d))
          .attr("r", 6)
          .attr("fill", (d,i) ->
-            return "slateblue" if male[i]
-            "#d02090")
+            return blue if male[i]
+            red)
          .attr("stroke", "black")
          .attr("stroke-width", "2")
          .on("mouseover", efftip)
@@ -321,21 +329,21 @@ draw = (data) ->
 
   # y-axis titles
   ylab = ["LOD score", "LOD score", data.phenotype, data.phenotype]
-  xpos = [pad.left/2, pad.left/2, left[2]-pad.left*0.8, left[3]-pad.left*0.8]
+  xpos = [pad.left/2, pad.left/2, left[2]-pad.left*0.6, left[3]-pad.left*0.7]
   for j in [0..3]
     YaxisGrp[j].append("text")
                .text(ylab[j])
                .attr("x", xpos[j])
                .attr("y", (top[j]+bottom[j])/2)
                .attr("transform", "rotate(270,#{xpos[j]},#{(top[j]+bottom[j])/2})")
-               .attr("fill", "darkslateblue")
+               .attr("fill", blue)
 
   # title on top panel
   topsvg.append("text")
      .text(data.phenotype)
      .attr("x", (left[0] + right[0])/2)
      .attr("y", pad.top/2)
-     .attr("fill", "darkslateblue")
+     .attr("fill", blue)
 
   # x-axis labels
   xlab = ["Chromosome", "Position (cM)"]
@@ -344,7 +352,7 @@ draw = (data) ->
                .text(xlab[j])
                .attr("x", (left[j] + right[j])/2)
                .attr("y", bottom[j] + pad.bottom*0.65)
-               .attr("fill", "darkslateblue")
+               .attr("fill", blue)
 
   # lod curves by chr
   lodcurve = (j) ->
@@ -359,7 +367,7 @@ draw = (data) ->
           .datum(data.lod[j].pos)
           .attr("d", lodcurve(j))
           .attr("class", "thickline")
-          .attr("stroke", "darkslateblue")
+          .attr("stroke", blue)
           .style("pointer-events", "none")
 
   # detailed LOD curves below
@@ -384,7 +392,7 @@ draw = (data) ->
               g = Math.abs(data.geno[marker][i])
               sx = data.sex[i]
               if(chr=="X")
-                return xScale[3](g-1)+jitter[i]
+                return xScale[3](sx*2+g-1)+jitter[i]
               xScale[3](sx*3+g-1)+jitter[i])
           .attr("cy", (d) -> yScale[3](d))
           .attr("r", "3")
@@ -415,7 +423,7 @@ draw = (data) ->
                g = Math.abs(data.geno[marker][i])
                sx = data.sex[i]
                if(chr=="X")
-                 return xScale[3](g-1)+jitter[i]
+                 return xScale[3](sx*2+g-1)+jitter[i]
                xScale[3](sx*3+g-1)+jitter[i])
            .attr("fill", (d,i) ->
                g = data.geno[marker][i]
@@ -434,20 +442,20 @@ draw = (data) ->
        .attr("d", botlodcurve(randomChr)(data.lod[randomChr].pos))
        .attr("class", "thickline")
        .attr("id", "detailedLod")
-       .attr("stroke", "darkslateblue")
+       .attr("stroke", blue)
        .style("pointer-events", "none")
   botsvg.append("text")
         .attr("x", (left[1] + right[1])/2)
         .attr("y", pad.top/2)
         .text("Chromosome #{randomChr}")
         .attr("id", "botLtitle")
-        .attr("fill", "darkslateblue")
+        .attr("fill", blue)
   botsvg.append("text")
         .attr("x", (left[2]+right[3])/2)
         .attr("y", pad.top/2)
         .text("")
         .attr("id", "botRtitle")
-        .attr("fill", "darkslateblue")
+        .attr("fill", blue)
 
   XaxisGrp[1].selectAll("empty")
               .data(xScale[1][randomChr].ticks(10))
@@ -650,4 +658,4 @@ draw = (data) ->
            .attr("class", "outerBox")
 
 # load json file and call draw function
-d3.json("weightlod.json", draw)
+d3.json("insulinlod.json", draw)
