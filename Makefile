@@ -5,7 +5,9 @@ STEM = sgn2017
 FIGS = Figs/scale_fig1.pdf \
 	   Figs/batches_fig1.pdf \
 	   Figs/epistasis_f2.pdf \
-	   Figs/congenic.pdf
+	   Figs/congenic.pdf \
+	   Figs/ail.pdf \
+	   Figs/hs.pdf
 
 $(STEM).pdf: $(STEM).tex header.tex $(FIGS)
 	xelatex $<
