@@ -9,7 +9,9 @@ FIGS = Figs/scale_fig1.pdf \
 	   Figs/ail.pdf \
 	   Figs/hs.pdf \
 	   Figs/rilines.pdf \
-	   Figs/ri8.pdf
+	   Figs/ri8.pdf \
+	   Figs/pleiotropy_network.pdf \
+	   Figs/causal_network.pdf
 
 $(STEM).pdf: $(STEM).tex header.tex $(FIGS)
 	xelatex $<
@@ -39,4 +41,10 @@ Figs/ri8.pdf: R/ri8_fig.R
 	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
 
 Figs/rilines.pdf: R/rilines_fig.R
+	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
+
+Figs/causal_network.pdf: R/causal_network.R
+	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
+
+Figs/pleiotropy_network.pdf: R/pleiotropy_network.R
 	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"

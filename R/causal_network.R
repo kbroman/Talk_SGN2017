@@ -1,11 +1,8 @@
 library(broman)
-bgcolor <- brocolors("bg")
 iArrows <- igraph:::igraph.Arrows
 
-pdf("../Figs/causal_network.pdf", height=6, width=10, pointsize=32)
-par(fg="white",col="white",col.axis="white",col.lab="white",col.main="white",
-    bg=bgcolor, mar=rep(0.1, 4), bty="n")
-
+pdf("../Figs/causal_network.pdf", height=6, width=10, pointsize=36)
+par(bg="#181818", fg="white", bty="n", mar=rep(0, 4))
 plot(0,0, xaxt="n", yaxt="n", xlab="", ylab="", type="n",
      xlim=c(-16-2/3, 150), ylim=c(0, 100), xaxs="i", yaxs="i")
 x <- c(25, 75, 105, 135)
