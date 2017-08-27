@@ -1,4 +1,3 @@
-outline.txt
 *.aux
 *.log
 *.nav
@@ -6,5 +5,5 @@ outline.txt
 *.snm
 *.toc
 *.vrb
-rqtl2.pdf
+sgn2017.pdf
 R/_cache
